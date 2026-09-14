@@ -105,7 +105,18 @@ public class MainGUI extends JFrame {
                - addLast, or
                - insertAfter
             */
-            
+
+            Session session = new Session (
+
+                    id,
+                    titleField.getText () ,
+                    mentorField.getText () ,
+                    departmentField.getText (),
+                    dateField.getText () ,
+                    timeField.getText () ,
+                    locationField.getText () ,
+                    max
+            );
             
             outputArea.setText("Session Added Successfully\n");
             // Clear the input fields
