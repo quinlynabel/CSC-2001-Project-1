@@ -10,7 +10,7 @@ public class MyLinkedList {
 
     public Session getFirst(){
         return first;
-    }
+    }   //getter for first and next
 
     public MyLinkedList getNext(){
         return next;
@@ -20,6 +20,8 @@ public class MyLinkedList {
         this.next = next;
     }
 
+    public void setFirst(Session first){ this.first = first; }
+
 
 
     public MyLinkedList addFirst(Session session) {
@@ -27,66 +29,83 @@ public class MyLinkedList {
        return new MyLinkedList(session, this);
     }
 
-    public MyLinkedList addLast(MyLinkedList list, Session session){
+    public MyLinkedList addLast(Session session){
 
-        if (list == null){
-            return new  MyLinkedList(session, null);
+        if (this.getNext() == null){
+            return new MyLinkedList(this.getFirst(), new MyLinkedList(session, null));
         }
 
-        return new MyLinkedList(list.getFirst(), addLast(list.getNext(), session));
-
+        return new MyLinkedList(this.getFirst(), this.getNext().addLast(session));
     }
 
-    public MyLinkedList insertAfter(MyLinkedList list, int newSessionID, Session session) {
+    public MyLinkedList insertAfter(Session session) {
 
-        if (list == null) {
-            return null;
+        if (session.getSessionID() < this.getFirst().getSessionID()) {
+            return addFirst(session);
         }
-
-        if (list.getFirst().getSessionID() == newSessionID) {
-            return new MyLinkedList(list.getFirst(), new MyLinkedList(session, list.getNext()));
-        }
-
-        return new MyLinkedList(list.getFirst(), insertAfter(list.getNext(), newSessionID, session));
-    }
-
-    public String searchByID(MyLinkedList list, int id){
-
-        if (list == null) {
-            return "Session ID Not Found";
-        }
-
-        if (list.getFirst().getSessionID() == id) {
-            return list.getFirst().toString();
-        }
-
-        return searchByID(list.getNext(), id);
-    }
-
-    public String searchByMentor(MyLinkedList list, String mentor){
-
-        if (list == null) {
-            return "Mentor Not Found";
-        }
-
-        if (list.getFirst().getMentor().equals(mentor)) {
-            return list.getFirst().toString();
-        }
-
-        return searchByMentor(list.getNext(), mentor);
-    }
-
-    public String remove(MyLinkedList list, Session session){
 
         MyLinkedList current = this;
 
-        while (current.next != null) {
-            if (current.next.first == session) {
-                current.next = current.next.next;
+        while (current.getNext() != null) {
+            if (current.getFirst().getSessionID() < session.getSessionID() && current.getNext().getFirst().getSessionID() > session.getSessionID()) {
+               current.setNext(new MyLinkedList(session, current.getNext()));
+
+               return this;
+            }
+
+            current = current.getNext();
+        }
+
+        return addLast(session);
+    }
+
+    public String searchByID(int id){
+
+        if (this.getFirst().getSessionID() == id) {
+            return this.getFirst().toString();
+        }
+
+        if (this.getNext() == null) {
+            return "Session ID Not Found";
+        }
+
+        return this.getNext().searchByID(id);
+    }
+
+    public String searchByMentor(String mentor){
+
+        if (this.getFirst().getMentor().equals(mentor)) {
+            return this.getFirst().toString();
+        }
+
+        if (this.getNext() == null) {
+            return "Mentor Not Found";
+        }
+
+        return this.getNext().searchByMentor(mentor);
+    }
+
+    public String remove(Session session){
+
+        if (this.getFirst().getSessionID() == session.getSessionID()) {
+            if (this.getNext() == null) {
+                return "Cannot remove the only session";
+            }
+
+            this.setFirst(this.getNext().getFirst());
+            this.setNext(this.getNext().getNext());
+            return "Session Removed";
+        }
+
+        MyLinkedList current = this;
+
+        while (current.getNext() != null) {
+            if (current.getNext().getFirst().getSessionID() == session.getSessionID()) {
+                current.setNext(current.getNext().getNext());
                 return "Session Removed";
             }
 
-            current = current.next;
+            current = current.getNext();
         }
 
         return "Session Not Found";
@@ -104,15 +123,31 @@ public class MyLinkedList {
     }
 
     public void display(){
-        System.out.println(this.first);
+        System.out.println(this.getFirst());
 
-        if (this.next != null) {
-            this.next.display();
+        if (this.getNext() != null) {
+            this.getNext().display();
         }
     }
 
+    public String updateSession(Session session){
+
+        MyLinkedList current = this;
+
+        while (current != null) {
+            if (current.getFirst().getSessionID() == session.getSessionID()) {
+                current.setFirst(session);
+                return "Session Updated";
+            }
+
+            current = current.getNext();
+        }
+
+        return "Session Not Found";
+    }
 
 
+// cancel registration
 
 
 
