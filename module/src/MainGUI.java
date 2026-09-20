@@ -11,6 +11,7 @@ public class MainGUI extends JFrame {
     private JTextField locationField;
     private JTextField maxField;
     private JTextArea outputArea;
+    private MyLinkedList sessions = null;
     // TODO: Create instance variable with type linked list
 
     public MainGUI() {
@@ -100,24 +101,41 @@ public class MainGUI extends JFrame {
         try {
             int id = Integer.parseInt(idField.getText());
             int max = Integer.parseInt(maxField.getText());
-            /* TODO: Create Session object and based on id call:
-               - addFirst, or
-               - addLast, or
-               - insertAfter
-            */
 
-            Session session = new Session (
-
+            Session newSession = new Session(
                     id,
-                    titleField.getText () ,
-                    mentorField.getText () ,
-                    departmentField.getText (),
-                    dateField.getText () ,
-                    timeField.getText () ,
-                    locationField.getText () ,
+                    titleField.getText(),
+                    mentorField.getText(),
+                    departmentField.getText(),
+                    dateField.getText(),
+                    timeField.getText(),
+                    locationField.getText(),
                     max
             );
-            
+            if (sessions == null) {
+                sessions = new MyLinkedList(newSession, null);
+            } else if (id < sessions.getFirst().getSessionID()) {
+                sessions = sessions.addFirst(newSession);
+
+            } else {
+                MyLinkedList current = sessions;
+
+                while (current.getNext() != null
+                        && current.getNext().getFirst().getSessionID() < id) {
+                    current = current.getNext();
+                }
+
+                if (current.getNext() == null) {
+                    sessions = sessions.addLast(sessions, newSession);
+                } else {
+                    sessions = sessions.insertAfter(
+                            sessions,
+                            current.getFirst().getSessionID(),
+                            newSession
+                    );
+                }
+            }
+
             outputArea.setText("Session Added Successfully\n");
             // Clear the input fields
             clearFields();
@@ -126,45 +144,110 @@ public class MainGUI extends JFrame {
             outputArea.setText("Invalid input");
         }
     }
-    
+
     // Display the information in the outputArea in GUI
     private void displaySessions() {
-        /* TODO: Print the sessions information in the
-                  outputArea
-        */
-        outputArea.setText("");
-
+        if (sessions == null) {
+            outputArea.setText("No sessions to display.");
+        } else {
+            String result = "";
+            MyLinkedList current = sessions;
+            while (current != null) {
+                result = result + current.getFirst().toString() + "\n";
+                current = current.getNext();
+            }
+            outputArea.setText(result);
+        }
     }
 
     // Search based on sessionID or mentor if the fields are not empty
     private void searchSession() {
-        /* TODO: 1) Search by sessionID, if field is empty,
-         print Session not found, in outputArea.
-        2) Search by mentor if the Mentor field is empty,
-         print No session found for mentor (mentor name) in outputArea
-        3) If both sessionID and mentor are empty,
-        print Please enter a Session ID or Mentor name in outputArea
-        */
-        
+        if (!idField.getText().isEmpty()) {
+            int id = Integer.parseInt(idField.getText());
+            if (sessions == null) {
+                outputArea.setText("Session ID Not Found");
+            } else {
+                outputArea.setText(sessions.searchByID(sessions, id));
+            }
+        }
+        else if (!mentorField.getText().isEmpty()) {
+            if (sessions == null) {
+                outputArea.setText("Mentor Not Found");
+            } else {
+                outputArea.setText(sessions.searchByMentor(sessions, mentorField.getText()));
+            }
+        }
+        else {
+            outputArea.setText("Enter a session ID or mentor name.");
+        }
     }
     
     // delete the session
     private void removeSession() {
-    	/* TODO: if session exits remove the session and print Session removed,
-    	otherwise print Session not found in outputArea
-    	*/
-        
+        int id = Integer.parseInt(idField.getText());
+        if (sessions == null) {
+            outputArea.setText("Session not found");
+        } else {
+            if (sessions.getFirst().getSessionID() == id) {
+                sessions = sessions.getNext();
+                outputArea.setText("Session Removed");
+            } else {
+                MyLinkedList current = sessions;
+                while (current != null) {
+                    if (current.getFirst().getSessionID() == id) {
+                        outputArea.setText(sessions.remove(sessions, current.getFirst()));
+                        return;
+                    }
+                    current = current.getNext();
+                }
+                outputArea.setText("Session not found");
+            }
+        }
     }
 
     // registerParticipants call the method in the LinkedList
     private void registerParticipant() {
-        /* TODO: It must call the registerParticipant() method of the LinkedList,
-        if result is True: print in outputArea, "Participant registered"
-        otherwise print, "Registration failed"
-        */
+        int id = Integer.parseInt(idField.getText());
+        if (sessions == null) {
+            outputArea.setText("Registration failed");
+        } else {
+            MyLinkedList current = sessions;
+            while (current != null) {
+                if (current.getFirst().getSessionID() == id) {
+                    if (sessions.registerParticipant(current.getFirst())) {
+                        outputArea.setText("Participant registered");
+                        return;
+                    } else {
+                        outputArea.setText("Registration failed");
+                        return;
+                    }
+                }
+                current = current.getNext();
+            }
+            outputArea.setText("Registration failed");
+        }
     }
 
-    // add updateSession from linked list method
+    private void updateSession () {
+        int id = Integer.parseInt(idField.getText());
+        if (sessions == null) {
+            outputArea.setText("Session not found");
+        } else {
+            MyLinkedList current = sessions;
+            while (current != null) {
+                if (current.getFirst().getSessionID() == id) {
+                    Session session = current.getFirst();
+                    session.setDate(dateField.getText());
+                    session.setTime(timeField.getText());
+                    session.setLocation(locationField.getText());
+                    outputArea.setText("Session Updated");
+                    return;
+                }
+                current = current.getNext();
+            }
+            outputArea.setText("Session not found");
+        }
+    }
 
     public static void main(String[] args) {
         new MainGUI();
