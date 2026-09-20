@@ -164,6 +164,8 @@ public class MainGUI extends JFrame {
         */
     }
 
+    // add updateSession from linked list method
+
     public static void main(String[] args) {
         new MainGUI();
     }
