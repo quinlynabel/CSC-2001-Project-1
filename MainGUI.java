@@ -12,10 +12,8 @@ public class MainGUI extends JFrame {
     private JTextField maxField;
     private JTextArea outputArea;
     private MyLinkedList sessions = null;
-    // TODO: Create instance variable with type linked list
 
     public MainGUI() {
-        // TODO: Create a new LinkList
         setTitle("Employee Mentorship and Inclusion Manager");
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
