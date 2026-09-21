@@ -249,6 +249,29 @@ public class MainGUI extends JFrame {
         }
     }
 
+    private void cancelRegistration () {
+        int id = Integer.parseInt(idField.getText());
+        if (sessions == null) {
+            outputArea.setText("Registration cancellation failed");
+        } else {
+            MyLinkedList current = sessions;
+            while (current != null) {
+                if (current.getFirst().getSessionID() == id) {
+                    if (current.getFirst().getCurrentParticipants() > 0) {
+                        current.getFirst().setCurrentParticipants(current.getFirst().getCurrentParticipants() - 1);
+                        outputArea.setText("Registration Canceled");
+                        return;
+                    } else {
+                        outputArea.setText("Registration cancellation failed");
+                        return;
+                    }
+                }
+                current = current.getNext();
+            }
+        }
+        outputArea.setText("Registration cancellation failed");
+    }
+
     public static void main(String[] args) {
         new MainGUI();
     }

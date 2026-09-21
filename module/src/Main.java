@@ -19,5 +19,9 @@ public class Main {
         System.out.println(sessions.registerParticipant(s1));
         System.out.println(sessions.remove(sessions, s2));
         sessions.display();
+
+        System.out.println("Participants before cancellation: " + s1.getCurrentParticipants());
+        s1.setCurrentParticipants(s1.getCurrentParticipants() - 1);
+        System.out.println("Participants after cancellation: " + s1.getCurrentParticipants());
     }
 }
